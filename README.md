@@ -50,7 +50,8 @@ The artwork is decorative and visible only on Home. A hamburger button opens
 navigation on phones, tablets, and desktops. Choose a
 tool to close the menu and focus its workspace. Escape returns focus to the button;
 clicking outside or tabbing away also closes it. The header stays accessible while
-scrolling. Use Up/Down or Home/End inside the list, then Enter/Space to select.
+scrolling. The tool list stays in one column and scrolls vertically within its
+panel. Use Up/Down or Home/End inside the list, then Enter/Space to select.
 On larger screens the menu drops down from the header’s right side; on phones it
 expands below the header. Resizing retains the current selection and entered data.
 

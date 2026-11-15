@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Vertical menu scrolling
+- Keep the expanded menu in one column instead of wrapping into extra columns.
+- Scroll vertically inside the menu, with no horizontal overflow or shrinking items.
+
+
 ## Unreleased — Blended header
 - Remove the opaque header block at the top of the page.
 - Add comfortable logo/menu spacing and a readable sticky surface on scroll.
