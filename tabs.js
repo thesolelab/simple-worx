@@ -3,6 +3,10 @@
   const tabs = [...document.querySelectorAll('[role="tab"]')];
   const navigation = document.getElementById('tool-navigation');
   const toggle = document.getElementById('nav-toggle');
+  const header = document.querySelector('.site-navigation');
+  function syncHeader() { header.classList.toggle('is-scrolled', window.scrollY > 0); }
+  window.addEventListener('scroll', syncHeader, {passive:true});
+  syncHeader();
   let expanded = false;
   function selected() {
     return tabs.find((tab) => tab.getAttribute('aria-selected') === 'true');

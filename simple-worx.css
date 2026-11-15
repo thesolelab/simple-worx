@@ -174,7 +174,7 @@ body.home-active {background:var(--home-bg);isolation:isolate}
 
 
 /* One accessible hamburger disclosure at every screen size. */
-.site-navigation {display:block;position:sticky;top:0;z-index:10;background:var(--bg);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px)}
+.site-navigation {display:block;position:sticky;top:0;z-index:10;background:transparent;backdrop-filter:none}
 .top .mark {display:none}
 .nav-toggle {display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;padding:10px;color:var(--text);background:var(--surface-inset);border:1px solid var(--border-strong);border-radius:10px;cursor:pointer}
 .nav-toggle>span {display:flex;flex-direction:column;gap:4px;width:20px}
@@ -191,3 +191,10 @@ body.home-active {background:var(--home-bg);isolation:isolate}
 @media(max-width:700px){[role="tabpanel"]{scroll-margin-top:24px}}
 @media(prefers-reduced-motion:reduce){.nav-toggle i{transition:none}}
 @media(forced-colors:active){.nav-toggle{border:1px solid ButtonText}}
+
+/* Blend into the page at the top; add a readable surface only while scrolling. */
+.site-navigation .top {padding:12px 2px 18px;gap:16px}
+.site-navigation.is-scrolled {background:var(--bg);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(16px);border-radius:0 0 12px 12px;box-shadow:var(--panel-shadow)}
+.nav-toggle {flex-basis:48px;width:48px;height:48px;border-radius:12px;background:transparent}
+.nav-toggle:hover {background:var(--accent-tint);border-color:var(--accent-text)}
+@media(forced-colors:active){.site-navigation.is-scrolled{background:Canvas}.nav-toggle{border-color:ButtonText}}

@@ -225,3 +225,7 @@ an in-flow phone disclosure. Resizing must retain valid focus and tool state.
 Use aria-expanded/controls, vertical manual-activation tab keyboard navigation,
 Escape/outside dismissal, focus transfer on selection, and safe resize focus.
 Keep the toggle accessible during scrolling and never reset tool inputs.
+
+The shared navigation header must blend transparently into the page at scroll
+position zero. Apply a readable surface only while scrolled; retain consistent
+logo/toggle padding and dimensions across all tools and widths.
