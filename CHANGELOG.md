@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Hamburger navigation on every device
+- Extend collapsible navigation to tablets and desktops.
+- Keep selection, focus, dismissal, and input preservation consistent at all widths.
+
+
 ## Unreleased — Mobile hamburger navigation
 - Add a phone-only menu button and collapsible tool list; retain desktop tabs.
 - Close after selection, Escape, or outside interaction, with accessible focus

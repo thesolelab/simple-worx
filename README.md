@@ -31,7 +31,7 @@ while switching tabs; Arrow keys, Home, and End navigate the tabs.
 
 ## Home and daily motivation
 The site opens on Home with a motivational message and eight tool
-cards. Select a card to open its workspace, or use the top tabs. Home is a launchpad;
+cards. Select a card to open its workspace, or use the navigation menu. Home is a launchpad;
 all tools remain mounted, so going Home and back retains current inputs and drafts.
 Home and every tool share the same page width/gutters, header/logo, and navigation
 geometry. Switching tabs starts at the top without changing those dimensions.
@@ -46,14 +46,13 @@ reduced-motion and forced-colors preferences are respected. The hero uses a sing
 local, losslessly compressed scene in
 `assets/home-atmosphere.webp`: broad ribbons flow into its top-right teal glow,
 behind live text and controls rather than inside a standalone illustration box.
-The artwork is decorative and visible only on Home. Navigation wraps on smaller
-screens rather than
-hiding labels beyond a horizontal scroll area. At phone widths (700px and below),
-a hamburger button replaces the tab strip. Open it to choose a tool; selection
-closes the menu and focuses the workspace. Escape returns focus to the button,
-and clicking outside also closes it. The button stays accessible while scrolling.
-Use Up/Down or Home/End inside the mobile list, then Enter/Space to select. Desktop
-keeps the existing tabs and their arrow-key behavior.
+The artwork is decorative and visible only on Home. A hamburger button opens
+navigation on phones, tablets, and desktops. Choose a
+tool to close the menu and focus its workspace. Escape returns focus to the button;
+clicking outside or tabbing away also closes it. The header stays accessible while
+scrolling. Use Up/Down or Home/End inside the list, then Enter/Space to select.
+On larger screens the menu drops down from the header’s right side; on phones it
+expands below the header. Resizing retains the current selection and entered data.
 
 ## Funnel & adoption calculator
 Open **Funnel & Adoption** from Home or the top navigation. Start with your own

@@ -50,7 +50,7 @@ workspace; no repeating grid texture. Keep the eight authorized tools and their 
 - simple-worx.css owns the branded shell refinements; styles.css owns tokens
   and shared components, tools.css owns tool-specific layout.
 - Preserve wide/fluid workspaces up to 1,920px and contained mobile scrolling.
-- Keep top tool tabs sticky and the version in the footer. The page scrollbar
+- Keep the navigation header sticky and the version in the footer. The page scrollbar
   remains visually hidden while wheel, touch, and keyboard scrolling work.
 - Use the branded SW favicon. The W in both monograms uses the wordmark’s
   violet-to-teal gradient; keep the S white and the dot teal. Leave padding for
@@ -219,8 +219,9 @@ ChartData delimiter override must not change existing chart/funnel defaults.
 Keep the homepage motivational headline/detail without a date or “Your daily spark”
 label. Continue rotating messages by local date and refreshing at midnight/return.
 
-At 700px and below use the mobile hamburger disclosure; keep the desktop tab strip
-unchanged above that breakpoint. Keep CSS and matchMedia breakpoints aligned.
+Use the hamburger disclosure on phones, tablets, and desktops. Keep the navigation
+collapsed by default at all widths, with a right-aligned desktop dropdown and
+an in-flow phone disclosure. Resizing must retain valid focus and tool state.
 Use aria-expanded/controls, vertical manual-activation tab keyboard navigation,
 Escape/outside dismissal, focus transfer on selection, and safe resize focus.
 Keep the toggle accessible during scrolling and never reset tool inputs.
