@@ -229,3 +229,6 @@ Keep the toggle accessible during scrolling and never reset tool inputs.
 The shared navigation header must blend transparently into the page at scroll
 position zero. Apply a readable surface only while scrolled; retain consistent
 logo/toggle padding and dimensions across all tools and widths.
+
+Expanded navigation must remain a single non-wrapping column with its own vertical
+scroll and no horizontal overflow. Keep menu items at their natural touch height.
