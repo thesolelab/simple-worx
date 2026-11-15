@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Blended header
+- Remove the opaque header block at the top of the page.
+- Add comfortable logo/menu spacing and a readable sticky surface on scroll.
+
+
 ## Unreleased — Hamburger navigation on every device
 - Extend collapsible navigation to tablets and desktops.
 - Keep selection, focus, dismissal, and input preservation consistent at all widths.
