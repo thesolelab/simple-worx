@@ -94,3 +94,29 @@ test('scatter preserves actual X values; bubble sizes are validated and zero Y v
   assert.throws(() => M.prepare(bubble,'bubble',{xValues:['a'],sizes:[10]}), /numeric X/);
   assert.throws(() => M.prepare(bubble,'bubble',{xValues:[1,2,3,4,5],sizes:[1,-1,2,3,4]}), /bubble-size/);
 });
+
+test('100% bar and column labels use category shares and preserve original input values', () => {
+  for (const id of ['percent-column','percent-bar']) {
+    const c=config(id,[['Quarter','A','B'],['Q1','60','40'],['Q2','30','70']]);
+    const before=JSON.stringify(c.series);
+    assert.equal(M.percentLabel(c,0,0).text,'60%');
+    assert.equal(M.percentLabel(c,1,0).text,'40%');
+    assert.equal(M.percentLabel(c,0,0).visible,true);
+    const spec=M.nativeSpec(c,v=>v.replace('#',''));
+    assert.deepEqual(spec.data.map(s=>s.values),[[.6,.3],[.4,.7]]);
+    assert.equal(spec.options.showValue,true);
+    assert.equal(spec.options.dataLabelFormatCode,'0.#%');
+    assert.equal(spec.options.dataLabelPosition,'ctr');
+    assert.equal(JSON.stringify(c.series),before);
+  }
+});
+test('zero and tiny segments do not render overlapping percentage labels',()=>{
+  for(const id of ['percent-column','percent-bar']){
+    const c=config(id,[['Quarter','A','B'],['Zero','0','0'],['Tiny','1','999']]);
+    assert.equal(M.percentLabel(c,0,0).value,0);
+    assert.equal(M.percentLabel(c,0,0).visible,false);
+    assert.equal(M.percentLabel(c,0,1).visible,false);
+    assert.equal(M.percentLabel(c,1,1).text,'99.9%');
+  }
+  assert.equal(M.percentLabel(config('stacked-column'),0,0),null);
+});
