@@ -232,3 +232,9 @@ logo/toggle padding and dimensions across all tools and widths.
 
 Expanded navigation must remain a single non-wrapping column with its own vertical
 scroll and no horizontal overflow. Keep menu items at their natural touch height.
+
+100% stacked column/bar segment labels share the DOM-free percentLabel helper.
+Keep contrasting foregrounds and hide zero/too-small labels consistently in
+preview and exports. Native PowerPoint uses editable percentage-valued chart
+data and centered percentage labels; preserve original inputs in a separate
+Source counts reference worksheet. Leave other chart families' data unchanged.

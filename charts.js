@@ -89,6 +89,7 @@
       : mode.xy ? (mode.id === 'bubble' ? 'Choose a numeric X column, one or more Y series, and a separate bubble-size column. Sizes must be non-negative.' : 'Choose a numeric X column and one or more Y series. Points use their actual X values, not category spacing.')
       : mode.native === 'radar' ? 'Compare series across 3–12 categories using non-negative values on a shared scale.'
       : combo ? 'Choose column or line for each series. Optional independent left/right axes support different units.'
+      : mode.percent && mode.native === 'bar' ? 'Show each category as a share of 100%. Column/bar segments show percentage labels where they fit. Their PowerPoint chart data uses percentages, with original inputs retained in a Source counts sheet.'
       : mode.percent ? 'Show each category as a share of 100%. Select multiple non-negative series to compare contributions.'
       : mode.stacked && mode.native === 'area' ? 'Stack non-negative series to show their combined contribution on a shared scale.'
       : 'All selected series use this chart style on a shared scale. Choose Combination for independent left/right axes.';
@@ -615,6 +616,58 @@
         zip.file(name, new XMLSerializer().serializeToString(xml));
       }
     }
+    if (snapshot.definition.percent && snapshot.definition.native === 'bar') {
+      const ns = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
+      const aNs = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+      const path = `ppt/charts/chart${chartNumber}.xml`;
+      const xml = new DOMParser().parseFromString(await zip.file(path).async('string'), 'application/xml');
+      const make = (name, attrs={}) => {const node=xml.createElementNS(ns,'c:'+name);for(const[k,v]of Object.entries(attrs))node.setAttribute(k,v);return node;};
+      const series = [...xml.getElementsByTagNameNS(ns,'ser')];
+      series.forEach((node,si)=>{
+        const previous=[...node.children].find(n=>n.localName==='dLbls');if(previous)previous.remove();
+        const labels=make('dLbls');
+        snapshot.labels.forEach((_,i)=>{if(!M.percentLabel(snapshot,si,i).visible){const label=make('dLbl');label.append(make('idx',{val:i}),make('delete',{val:1}));labels.append(label);}});
+        labels.append(make('numFmt',{formatCode:'0.#%',sourceLinked:0}));
+        const tx=make('txPr'),body=xml.createElementNS(aNs,'a:bodyPr'),list=xml.createElementNS(aNs,'a:lstStyle'),p=xml.createElementNS(aNs,'a:p'),pp=xml.createElementNS(aNs,'a:pPr'),run=xml.createElementNS(aNs,'a:defRPr'),fill=xml.createElementNS(aNs,'a:solidFill'),color=xml.createElementNS(aNs,'a:srgbClr');
+        run.setAttribute('sz','1100');run.setAttribute('b','1');color.setAttribute('val',C.foreground(snapshot.series[si].color).slice(1));fill.append(color);run.append(fill);pp.append(run);p.append(pp);tx.append(body,list,p);
+        labels.append(tx,make('dLblPos',{val:'ctr'}),make('showVal',{val:1}));
+        const after=[...node.children].find(n=>['cat','val','extLst'].includes(n.localName));node.insertBefore(labels,after||null);
+      });
+      zip.file(path,new XMLSerializer().serializeToString(xml));
+      // Keep original inputs alongside the percentage-valued editable chart data.
+      const workbookPath=`ppt/embeddings/Microsoft_Excel_Worksheet${chartNumber}.xlsx`;
+      const book=await window.JSZip.loadAsync(await zip.file(workbookPath).async('uint8array'));
+      const parse=path=>book.file(path).async('string').then(text=>new DOMParser().parseFromString(text,'application/xml'));
+      const workbook=await parse('xl/workbook.xml'),rels=await parse('xl/_rels/workbook.xml.rels'),types=await parse('[Content_Types].xml');
+      const styles=await parse('xl/styles.xml'),values=await parse('xl/worksheets/sheet1.xml');
+      const styleNs=styles.documentElement.namespaceURI;
+      let cellXfs=styles.getElementsByTagNameNS(styleNs,'cellXfs')[0];
+      if(!cellXfs){
+        cellXfs=styles.createElementNS(styleNs,'cellXfs');
+        const base=styles.createElementNS(styleNs,'xf');
+        for(const[k,v]of Object.entries({numFmtId:0,fontId:0,fillId:0,borderId:0,xfId:0}))base.setAttribute(k,v);
+        cellXfs.append(base);cellXfs.setAttribute('count','1');
+        const after=[...styles.documentElement.children].find(n=>['cellStyles','dxfs','tableStyles','colors','extLst'].includes(n.localName));
+        styles.documentElement.insertBefore(cellXfs,after||null);
+      }
+      const styleIndex=cellXfs.children.length,xf=styles.createElementNS(styles.documentElement.namespaceURI,'xf');
+      for(const[k,v]of Object.entries({numFmtId:10,fontId:0,fillId:0,borderId:0,xfId:0,applyNumberFormat:1}))xf.setAttribute(k,v);
+      cellXfs.append(xf);cellXfs.setAttribute('count',String(styleIndex+1));
+      for(const cell of values.getElementsByTagNameNS(values.documentElement.namespaceURI,'c'))if(!/^A\d+$/.test(cell.getAttribute('r'))&&!/[A-Z]+1$/.test(cell.getAttribute('r')))cell.setAttribute('s',String(styleIndex));
+      book.file('xl/styles.xml',new XMLSerializer().serializeToString(styles));book.file('xl/worksheets/sheet1.xml',new XMLSerializer().serializeToString(values));
+
+      const sheetNs='http://schemas.openxmlformats.org/spreadsheetml/2006/main',relNs='http://schemas.openxmlformats.org/package/2006/relationships',officeRel='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+      const sheetNumber=Math.max(...Object.keys(book.files).map(p=>Number(p.match(/^xl\/worksheets\/sheet(\d+)\.xml$/)?.[1])||0))+1;
+      const rid='rId'+(Math.max(...[...rels.documentElement.children].map(n=>Number(n.getAttribute('Id').replace('rId',''))||0))+1);
+      const sheet=workbook.createElementNS(sheetNs,'sheet');sheet.setAttribute('name','Source counts');sheet.setAttribute('sheetId',String(Math.max(...[...workbook.getElementsByTagNameNS(sheetNs,'sheet')].map(n=>Number(n.getAttribute('sheetId'))))+1));sheet.setAttributeNS(officeRel,'r:id',rid);workbook.getElementsByTagNameNS(sheetNs,'sheets')[0].append(sheet);
+      const rel=rels.createElementNS(relNs,'Relationship');rel.setAttribute('Id',rid);rel.setAttribute('Type',officeRel+'/worksheet');rel.setAttribute('Target',`worksheets/sheet${sheetNumber}.xml`);rels.documentElement.append(rel);
+      const type=types.createElementNS(types.documentElement.namespaceURI,'Override');type.setAttribute('PartName',`/xl/worksheets/sheet${sheetNumber}.xml`);type.setAttribute('ContentType','application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml');types.documentElement.append(type);
+      const raw=new DOMParser().parseFromString(`<worksheet xmlns="${sheetNs}"><sheetData/></worksheet>`,'application/xml'),data=raw.getElementsByTagNameNS(sheetNs,'sheetData')[0];
+      const rows=[[snapshot.category,...snapshot.series.map(s=>s.name)],...snapshot.labels.map((name,i)=>[name,...snapshot.series.map(s=>s.values[i])])];
+      rows.forEach((values,i)=>{const row=raw.createElementNS(sheetNs,'row');row.setAttribute('r',String(i+1));values.forEach((value,j)=>{const cell=raw.createElementNS(sheetNs,'c');cell.setAttribute('r',String.fromCharCode(65+j)+(i+1));if(typeof value==='number'){const v=raw.createElementNS(sheetNs,'v');v.textContent=String(value);cell.append(v);}else{cell.setAttribute('t','inlineStr');const inline=raw.createElementNS(sheetNs,'is'),text=raw.createElementNS(sheetNs,'t');text.setAttribute('xml:space','preserve');text.textContent=value;inline.append(text);cell.append(inline);}row.append(cell);});data.append(row);});
+      for(const[path,doc]of [['xl/workbook.xml',workbook],['xl/_rels/workbook.xml.rels',rels],['[Content_Types].xml',types],[`xl/worksheets/sheet${sheetNumber}.xml`,raw]])book.file(path,new XMLSerializer().serializeToString(doc));
+      zip.file(workbookPath,await book.generateAsync({type:'uint8array'}));
+    }
     if (snapshot.definition.radial) {
       for (const name of Object.keys(zip.files).filter(name => name === `ppt/charts/chart${chartNumber}.xml`)) {
         const xml = new DOMParser().parseFromString(await zip.file(name).async('string'), 'application/xml');
@@ -641,7 +694,7 @@
       const pptx = new window.PptxGenJS();
       pptx.layout = 'LAYOUT_WIDE'; pptx.author = 'Simple Worx'; pptx.subject = 'Editable chart and source data'; pptx.title = snapshot.title;
       addNativeChart(pptx, pptx.addSlide(), snapshot);
-      if (['bubble', 'percent-area'].includes(snapshot.mode) || snapshot.definition.radial) {
+      if (['bubble', 'percent-area', 'percent-column', 'percent-bar'].includes(snapshot.mode) || snapshot.definition.radial) {
         const zip = await window.JSZip.loadAsync(await pptx.write({ outputType: 'blob' }));
         await repairNativeChart(zip, snapshot, 1);
         save(await zip.generateAsync({ type: 'blob' }), filename(snapshot, 'pptx'));

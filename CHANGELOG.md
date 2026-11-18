@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Percentage stack labels
+- Add centered, contrasting percentage labels to 100% stacked columns and bars.
+- Include labels in image exports and editable PowerPoint charts, preserving
+  original counts in a reference worksheet. Hide labels that cannot fit legibly.
+
 ## Unreleased — Vertical menu scrolling
 - Keep the expanded menu in one column instead of wrapping into extra columns.
 - Scroll vertically inside the menu, with no horizontal overflow or shrinking items.

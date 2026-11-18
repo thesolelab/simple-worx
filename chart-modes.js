@@ -89,10 +89,24 @@
     return c;
   }
 
+  function percentLabel(c, seriesIndex, categoryIndex) {
+    if (!c.definition.percent || c.definition.native !== 'bar') return null;
+    const total = c.series.reduce((sum, series) => sum + series.values[categoryIndex], 0);
+    const value = total ? c.series[seriesIndex].values[categoryIndex] / total : 0;
+    const text = new Intl.NumberFormat('en-US', {style:'percent',maximumFractionDigits:1}).format(value);
+    const horizontal = c.definition.horizontal;
+    const band = (horizontal ? 365 : 880) / c.labels.length * .7;
+    const width = horizontal ? value * 880 : band;
+    const height = horizontal ? band : value * 365;
+    return {value, text, visible:value>0 && height>=22 && width>=text.length*8+10};
+  }
+
   function nativeSpec(c, color) {
     const m = c.definition;
     let data = c.series.map(s => ({ name: s.name, labels: c.labels, values: s.values }));
     if (m.xy) data = [{ name: c.category, values: c.xValues }, ...c.series.map(s => ({ name: s.name, values: s.values, ...(c.mode === 'bubble' ? { sizes: c.sizes } : {}) }))];
+    const labeledPercent = m.percent && m.native === 'bar';
+    if (labeledPercent) data = data.map((series, si) => ({...series, values:series.values.map((_,i)=>percentLabel(c,si,i).value)}));
     const options = { chartColors: (m.radial ? c.legend : c.series).map(s => color(s.color)),
       barDir: m.horizontal ? 'bar' : 'col',
       barGrouping: m.percent ? 'percentStacked' : m.stacked ? 'stacked' : m.native === 'bar' ? 'clustered' : 'standard',
@@ -101,7 +115,8 @@
       lineDataSymbol: ['line-markers', 'scatter', 'scatter-lines', 'radar-markers'].includes(c.mode) ? 'circle' : 'none',
       lineDataSymbolSize: 5, lineSmooth: c.mode === 'smooth-line',
       radarStyle: c.mode === 'radar-filled' ? 'filled' : c.mode === 'radar-markers' ? 'marker' : 'standard',
-      holeSize: 58, showPercent: m.radial, showValue: false,
+      holeSize: 58, showPercent: m.radial, showValue: labeledPercent,
+      ...(labeledPercent ? {dataLabelFormatCode:'0.#%',dataLabelPosition:'ctr',dataLabelColor:'F4F6FC'} : {}),
       chartColorsOpacity: m.native === 'area' || c.mode === 'radar-filled' ? 40 : 100 };
     if (m.xy) Object.assign(options, { catAxisMinVal: c.xAxis.min, catAxisMaxVal: c.xAxis.max, catAxisMajorUnit: c.xAxis.step });
     return { type: m.native, data, options };
@@ -226,6 +241,14 @@
             const center = horizontal ? T + (i + 0.5) * (B - T) / c.labels.length : x(i);
             const offset = center - band / 2 + (m.stacked ? 0 : si * width);
             tip(node('rect', { x: horizontal ? Math.min(low, high) : offset, y: horizontal ? offset : Math.min(low, high), width: horizontal ? Math.abs(high - low) : Math.max(0.5, width - (m.stacked ? 0 : 2)), height: horizontal ? Math.max(0.5, width - (m.stacked ? 0 : 2)) : Math.abs(high - low), fill: s.color }), `${c.labels[i]} · ${s.name}: ${fmt(value, c.valueFormat)}${m.percent ? ' (' + fmt(seg.high - seg.low, 'percent') + ')' : ''}`);
+            const percentage = percentLabel(c,si,i);
+            if (percentage?.visible) label(percentage.text, {
+              x: horizontal ? (low+high)/2 : offset+width/2,
+              y: horizontal ? offset+width/2 : (low+high)/2,
+              'text-anchor':'middle', 'dominant-baseline':'middle',
+              'font-weight':700, 'pointer-events':'none', class:'percent-stack-label',
+              fill:root.ChartColors ? root.ChartColors.foreground(s.color) : text
+            });
           });
         } else {
           const points = s.values.map((v, i) => [m.xy ? scale(c.xValues[i], c.xAxis, L, R) : x(i), y(m.stacked ? c.segments[si][i].high : v)]);
@@ -279,7 +302,7 @@
     svg.replaceChildren(chart);
   }
 
-  const api = { MODES, definition, stack, prepare, nativeSpec, example, randomStartup, render };
+  const api = { MODES, definition, stack, prepare, nativeSpec, example, randomStartup, render, percentLabel };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ChartModes = api;
 })(typeof window !== 'undefined' ? window : globalThis);

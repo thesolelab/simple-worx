@@ -291,6 +291,15 @@ non-negative values and a positive total. Radar uses 3–12 non-negative categor
 use a shared scale; independent dual axes are available in Combination mode.
 Every style exports as a native editable PowerPoint chart, not a screenshot.
 
+100% stacked columns and bars show centered percentage labels, rounded to at most
+one decimal, with contrasting text for each series color. Zero values and segments
+too small for readable labels are omitted; hovering still shows their values.
+Labels are included in SVG/PNG and remain editable native PowerPoint labels.
+For these two styles, the embedded chart worksheet uses percentage values rather
+than counts, so edited chart values keep percentage labels. A separate **Source
+counts** worksheet preserves the original inputs for reference; it is not linked
+to the editable chart values.
+
 Desktop workspaces use a wider, fluid layout up to 1,920px with flexible gutters.
 Tables and chart previews scroll within their own containers on small screens.
 
