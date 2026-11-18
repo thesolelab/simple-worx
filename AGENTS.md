@@ -238,3 +238,10 @@ Keep contrasting foregrounds and hide zero/too-small labels consistently in
 preview and exports. Native PowerPoint uses editable percentage-valued chart
 data and centered percentage labels; preserve original inputs in a separate
 Source counts reference worksheet. Leave other chart families' data unchanged.
+
+Excel & Lists clipboard buttons must read current clipboard text only on explicit
+clicks, without caching or falling back to earlier data. Preserve native keyboard
+paste; reject blocked/empty reads clearly and ignore reads superseded by edits,
+clears, imports, or newer paste requests. De-duper paste uses spreadsheet TSV parsing
+and the same worksheet/de-dupe pipeline as uploads, preserving strings. Support
+appending multiple lists and optional headers; never silently discard first entries.

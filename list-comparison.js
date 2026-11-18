@@ -27,6 +27,27 @@
   };
   for (const id of ['a', 'b', 'trim', 'case'])
     $(id).addEventListener('input', invalidate);
+  for (const id of ['a', 'b']) {
+    $('paste-' + id).addEventListener('click', async () => {
+      invalidate();
+      const request = version;
+      try {
+        const text = await window.ToolClipboard.readText();
+        if (request !== version) return;
+        if (text.length > 1000000)
+          throw new Error('Use up to 1 million characters per list.');
+        $(id).value = text;
+        invalidate();
+        $('status').textContent =
+          'Clipboard pasted into List ' +
+          id.toUpperCase() +
+          '. Review the entries, then compare.';
+        $(id).focus();
+      } catch (error) {
+        if (request === version) $('status').textContent = error.message;
+      }
+    });
+  }
   function show() {
     const key = $('view').value;
     $('output').value = result[key].join('\n');
