@@ -105,6 +105,73 @@
       status(error.message, true);
     }
   );
+  function pastedChanged() {
+    invalidate();
+    workbook = source = null;
+    $('setup').hidden = $('options').hidden = true;
+    status('Pasted data changed. Select Use pasted data before previewing.');
+  }
+  $('paste').addEventListener('input', pastedChanged);
+  $('paste-headers').addEventListener('change', pastedChanged);
+  $('paste-clipboard').addEventListener('click', async () => {
+    invalidate();
+    const request = revision;
+    try {
+      const text = await window.ToolClipboard.readText();
+      if (request !== revision) return;
+      const previous = $('paste').value;
+      const next = previous + (previous && !/[\r\n]$/.test(previous) ? '\n' : '') + text;
+      if (next.length > 100000)
+        throw new Error(
+          'Paste up to 100,000 characters, or upload a workbook for larger data.'
+        );
+      $('paste').value = next;
+      pastedChanged();
+      status('Clipboard appended. Review the pasted cells, then select Use pasted data.');
+      $('paste').focus();
+    } catch (error) {
+      if (request === revision) status(error.message, true);
+    }
+  });
+  $('paste-clear').addEventListener('click', () => {
+    $('paste').value = '';
+    pastedChanged();
+    status('Pasted data cleared. Paste new data or upload a workbook.');
+    $('paste').focus();
+  });
+  $('paste-use').addEventListener('click', async () => {
+    pastedChanged();
+    const request = revision;
+    try {
+      const rows = window.SlideTable.parse($('paste').value, 'tsv');
+      const columns = rows.reduce((max, row) => Math.max(max, row.length), 0);
+      if (
+        !columns ||
+        columns > 200 ||
+        rows.length > 50001 ||
+        rows.length * columns > 1000000
+      )
+        throw new Error('Use up to 50,000 data rows, 200 columns, and 1 million cells.');
+      if (!$('paste-headers').checked)
+        rows.unshift(Array.from({ length: columns }, (_, i) => 'Column ' + (i + 1)));
+      if (rows.length < 2)
+        throw new Error(
+          'Include at least one data row. Uncheck the headers option for lists without a header.'
+        );
+      const X = await window.ToolLibraries.load('excel');
+      if (request !== revision) return;
+      const next = X.utils.book_new();
+      X.utils.book_append_sheet(next, X.utils.aoa_to_sheet(rows), 'Pasted data');
+      workbook = next;
+      sourceFilename = 'pasted-data';
+      $('sheet').replaceChildren();
+      option($('sheet'), 'Pasted data', 'Pasted data');
+      $('setup').hidden = false;
+      loadSheet();
+    } catch (error) {
+      if (request === revision) status(error.message, true);
+    }
+  });
   function exclusionMode() {
     return $('mode').value === 'exclude';
   }

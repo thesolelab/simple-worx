@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Excel & Lists clipboard import
+- Paste and append spreadsheet lists directly into the de-duper, with optional headers.
+- Add current-clipboard paste buttons for lists A/B, blocked/empty clipboard feedback,
+  and protection against late clipboard reads overwriting edits or resets.
+
 ## Unreleased — Percentage stack labels
 - Add centered, contrasting percentage labels to 100% stacked columns and bars.
 - Include labels in image exports and editable PowerPoint charts, preserving

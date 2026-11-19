@@ -90,6 +90,17 @@ If clipboard access is blocked, copy the selected recap manually or download PNG
 No Pendo/Adobe connection, AI, external processing, or significance testing is used.
 
 ## Excel de-duper
+Open **Paste or combine spreadsheet lists** to paste cells without saving a file.
+Paste with Ctrl+V / Cmd+V, or use **Paste / append clipboard** to append the current
+clipboard to the source area. Combine several lists here, with column headers only
+once. Uncheck **First row contains column headers** for headerless lists; generated
+column headings keep the first entry as data. Choose **Use pasted data**, then the
+column and de-dupe/exclusion options. Pasted cells stay text, preserving leading
+zeros and formula-like strings. This source accepts spreadsheet tabs/newlines,
+including quoted multiline cells, up to 100,000 characters. Upload larger datasets.
+Edits invalidate old previews; rebuilding replaces the active uploaded/pasted source.
+**Clear pasted data** resets the paste source and its active preview.
+
 1. Drag and drop XLSX, XLS, or CSV into the upload area, or choose **browse files**
    (up to 10 MB).
 2. Choose the worksheet and the column to check. The first used row is the header.
@@ -142,6 +153,13 @@ matching only; first spellings are preserved, shared values use A, and the combi
 list follows A then unmatched B. Results contain values only, not full source rows.
 Copy the selected result or download all four result sets as separate Excel sheets.
 Edits invalidate results. Clear lists leaves the uploaded workbook untouched.
+**Paste clipboard into A/B** reads the current system clipboard on each click and
+replaces that list; keyboard paste keeps normal cursor/selection behavior. Clipboard
+reads are never cached. Blocked or empty reads show instructions instead of reusing
+old content, and late reads cannot overwrite newer edits or a reset. If Excel Online
+has not updated the system clipboard, Simple Worx cannot retrieve its internal
+selection: allow clipboard access for Excel, copy the cells again, or download and
+upload the workbook. Review pasted data before comparing.
 Limits: 50,000 lines and 1 million characters per list.
 
 ## Slide-ready table builder

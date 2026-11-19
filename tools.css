@@ -94,7 +94,7 @@
 .utility-panel {margin:24px 0;padding:28px;min-width:0}
 .utility-panel h2 {margin-bottom:16px}
 .utility-panel h3 {margin:22px 0 12px}
-.utility-panel textarea {display:block;width:100%;resize:vertical;min-height:90px;padding:12px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-inset);color:var(--text);font:14px/1.5 var(--font-body)}
+.utility-panel textarea,.dedupe-panel textarea {display:block;width:100%;resize:vertical;min-height:90px;padding:12px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-inset);color:var(--text);font:14px/1.5 var(--font-body)}
 .utility-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}
 .utility-panel .dedupe-actions {flex-wrap:wrap}
 .utility-panel .notes-options {display:flex;gap:18px;flex-wrap:wrap}
@@ -120,3 +120,8 @@
 .funnel-chart {overflow:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-inset);max-height:720px}
 .funnel-chart svg {display:block;width:100%;min-width:750px;height:auto}
 @media(max-width:700px){.funnel-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.funnel-metric{padding:14px}}
+
+.dedupe-panel .paste-data .dedupe-actions {flex-wrap:wrap}
+.utility-grid [id^="lists-paste-"] {margin:8px 0}
+
+.dedupe-panel .paste-data input[type=checkbox] {accent-color:var(--accent-text)}

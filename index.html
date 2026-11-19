@@ -331,6 +331,14 @@ Jun,42500,3.8%</textarea>
       <input id="dedupe-file" type="file" accept=".xlsx,.xls,.csv" aria-label="Upload spreadsheet for de-duping or exclusions" aria-describedby="dedupe-file-help"/>
      </label>
      <p class="note" id="dedupe-file-help">Files stay in your browser. Up to 10 MB, 50,000 data rows, 200 columns, and 1 million cells. The first used row is treated as headers.</p>
+     <details class="paste-data">
+      <summary>Paste or combine spreadsheet lists</summary>
+      <p class="note" id="dedupe-paste-help">Copy cells in Excel, then paste here with Ctrl+V / Cmd+V. Append multiple lists below; include headers only once. Clipboard button appends the current clipboard on a new line. Up to 100,000 characters.</p>
+      <p class="note">Seeing an older selection? Allow clipboard access for Excel Online in your browser and copy the cells again, or download and upload the workbook above.</p>
+      <label class="builder-label">Pasted spreadsheet<textarea id="dedupe-paste" rows="7" maxlength="100000" aria-describedby="dedupe-paste-help"></textarea></label>
+      <label><input id="dedupe-paste-headers" type="checkbox" checked/> First row contains column headers</label>
+      <div class="dedupe-actions"><button id="dedupe-paste-clipboard" type="button" class="recap-secondary">Paste / append clipboard</button><button id="dedupe-paste-use" type="button" class="primary">Use pasted data</button><button id="dedupe-paste-clear" type="button" class="recap-secondary">Clear pasted data</button></div>
+     </details>
      <div id="dedupe-setup" hidden>
       <label class="builder-label" for="dedupe-sheet">Worksheet<select id="dedupe-sheet"></select></label>
       <p class="note" id="dedupe-source-info"></p>
@@ -374,8 +382,9 @@ Jun,42500,3.8%</textarea>
      <h2 id="lists-heading">List comparison</h2>
      <p class="note">Paste one entry per line, or upload a spreadsheet above, choose two columns, and bring them into lists A and B. Headers are excluded. Results are unique values, not full source rows.</p>
      <button id="lists-use-columns" type="button" class="recap-secondary">Use selected worksheet columns as A / B</button>
+     <p class="note">Clipboard buttons replace that list with the current clipboard. If Excel Online pastes an older selection, allow clipboard access for Excel in your browser, copy the cells again, then paste. You can also download and upload the workbook above.</p>
      <form id="lists-form">
-      <div class="utility-grid"><label class="builder-label">List A<textarea id="lists-a" rows="8" maxlength="1000000"></textarea></label><label class="builder-label">List B<textarea id="lists-b" rows="8" maxlength="1000000"></textarea></label></div>
+      <div class="utility-grid"><div><label class="builder-label" for="lists-a">List A</label><button id="lists-paste-a" type="button" class="recap-secondary">Paste clipboard into A</button><textarea id="lists-a" rows="8" maxlength="1000000" aria-label="List A"></textarea></div><div><label class="builder-label" for="lists-b">List B</label><button id="lists-paste-b" type="button" class="recap-secondary">Paste clipboard into B</button><textarea id="lists-b" rows="8" maxlength="1000000" aria-label="List B"></textarea></div></div>
       <div class="notes-options"><label><input id="lists-case" type="checkbox" checked/> Ignore case</label><label><input id="lists-trim" type="checkbox" checked/> Ignore surrounding spaces</label></div>
       <p class="note">Up to 50,000 entries per list. Blank lines are skipped. Shared values retain the first spelling in A; combined results follow A then unmatched B.</p>
       <div class="dedupe-actions"><button class="primary" type="submit">Compare lists</button><button id="lists-clear" type="button" class="recap-secondary">Clear lists</button></div>
@@ -527,11 +536,12 @@ Jun,42500,3.8%</textarea>
   <script src="charts.js"></script>
   <script src="dedupe-core.js"></script>
   <script src="productivity-core.js"></script>
+  <script src="table-core.js"></script>
+  <script src="clipboard.js"></script>
   <script src="list-comparison.js"></script>
   <script src="deduper.js"></script>
   <script src="notes-core.js"></script>
   <script src="notes.js"></script>
-  <script src="table-core.js"></script>
   <script src="slide-table.js"></script>
   <script src="utm.js"></script>
   <script src="percentages.js"></script>
